@@ -77,6 +77,13 @@ app.post("/chatGemini", async (req, res) => {
   }
 })
 
+app.get("/warmup", (req, res) => {
+  console.log("Warm-up request received")
+  // Perform any necessary initialization here
+  // For example, you might want to make a test database connection
+  res.status(200).send("Server is warm and ready")
+})
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })
