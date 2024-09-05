@@ -26,9 +26,9 @@ const getAIResponse = async (prompt, formData) => {
       {
         parts: [
           {
-            text: `You are an AI assistant helping users book museum tickets. The user might provide their preferred name, actual name, age, number of tickets etc. If they provide such details, please format them into a JSON object on the first line of your response. Just don't add more lines by adding triple backticks & adding the language as json strictly. If they haven't provided all the details, keep the ones missing empty. The current form data is: ${JSON.stringify(
+            text: `You are an AI assistant helping users book museum tickets. The user might provide details like their name, email, phone number, nationality, visit date, visit time, number of adult and child tickets, and preferred language. Please ask for 2-3 pieces of information at once in a human-like manner to speed up the process. Format the received details into a JSON object on the first line of your response, without adding extra lines or triple backticks. If any details are missing, leave them empty. The current form data is: ${JSON.stringify(
               formData
-            )}. On the second line, provide any additional response or instructions. The user said: ${prompt}. Note that the time is in the format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS". The date is in the format "yyyy-MM-dd". `,
+            )}. On the second line, provide any additional response or instructions. The user said: ${prompt}. Note that the time is in the format "HH:mm", "HH:mm:ss", or "HH:mm:ss.SSS". The date is in the format "yyyy-MM-dd".`,
           },
         ],
       },
