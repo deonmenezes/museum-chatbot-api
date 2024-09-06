@@ -12,7 +12,7 @@ const app = express()
 
 // MongoDB connection string
 const uri =
-  "mongodb+srv://deonmenezes:@cluster0.xlvdygl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+  "mongodb+srv://deonmenezes:n6Y74Q*SqwaRmvu@cluster0.xlvdygl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 const client = new MongoClient(uri)
 
 // Initialize an object to store conversation histories
