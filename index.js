@@ -37,7 +37,7 @@ app.use(cors())
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY
 const GEMINI_API_URL = process.env.GEMINI_API_URL
 
-const getAIResponse = async (prompt, formData) => {
+const getAIResponse = async (prompt, formData, userId) => {
   const headers = {
     "Content-type": "application/json",
   }
@@ -90,9 +90,12 @@ app.get("/", (req, res) => {
 app.post("/chatGemini", async (req, res) => {
   try {
     console.log("this port is working")
-    const { prompt, formData } = req.body
+    const { prompt, formData, userId } = req.body
     if (!prompt) {
       return res.status(400).json({ message: "Prompt is empty:" })
+    }
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" })
     }
 
     addToConversationHistory(userId, "user", prompt)
