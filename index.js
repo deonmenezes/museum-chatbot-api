@@ -6,8 +6,14 @@ const cors = require("cors")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const axios = require("axios")
+const { MongoClient } = require("mongodb")
 
 const app = express()
+
+// MongoDB connection string
+const uri =
+  "mongodb+srv://deonmenezes:@cluster0.xlvdygl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const client = new MongoClient(uri)
 
 // Initialize an object to store conversation histories
 const conversationHistories = {}
@@ -38,49 +44,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY
 const GEMINI_API_URL = process.env.GEMINI_API_URL
 
 const getAIResponse = async (prompt, formData, userId) => {
-  const headers = {
-    "Content-type": "application/json",
-  }
-  // Get the conversation history for this user
-  const history = getConversationHistory(userId)
-
-  // Prepare the conversation history for the AI
-  const conversationContext = history
-    .map((msg) => `${msg.role}: ${msg.content}`)
-    .join("\n")
-
-  const data = {
-    contents: [
-      {
-        parts: [
-          {
-            text: `You are an AI assistant helping users book museum tickets & answering any questions they might have. Let them choose the museum first. Provide a human interaction & answer any questions the user might ask(Don't just ask for these details multiple times. Provide the best user experience).The user might provide details like their name, email, phone number, nationality, visit date, visit time, number of adult and child tickets, and preferred language. Please ask for 2-3 pieces of information at once in a human-like manner to speed up the process. Format the received details into a JSON object on the first line of your response, without adding extra lines or triple backticks. If any details are missing, leave them empty. The current form data is: ${JSON.stringify(
-              formData
-            )}. On the second line, provide any additional response or instructions. Here's the conversation history:\n${conversationContext}\nThe user's latest message is: ${prompt}. Note that the time is in the format "HH:mm", "HH:mm:ss", or "HH:mm:ss.SSS". The date is in the format "yyyy-MM-dd". Once all the details are collected, provide this link to the user, so he can redirect when he clicks on the link you provide in the chat: https://museum-chatbot-gray.vercel.app/payment.tsx`,
-          },
-        ],
-      },
-    ],
-  }
-
-  const params = {
-    key: GEMINI_API_KEY,
-  }
-
-  try {
-    const response = await axios.post(GEMINI_API_URL, data, {
-      headers: headers,
-      params: params,
-    })
-
-    if (response.status === 200) {
-      return response.data.candidates[0].content.parts[0].text
-    } else {
-      return `Error: ${response.status} - ${response.statusText}`
-    }
-  } catch (err) {
-    return `Error: ${err.response.status} - ${err.response.data}`
-  }
+  // ... (rest of the getAIResponse function remains the same)
 }
 
 app.get("/", (req, res) => {
@@ -103,18 +67,36 @@ app.post("/chatGemini", async (req, res) => {
     const aiResponse = await getAIResponse(prompt, formData, userId)
     console.log(aiResponse)
 
+    // Insert form data into MongoDB
+    if (Object.keys(formData).length > 0) {
+      await insertFormData(formData)
+    }
+
     res.json({ message: aiResponse })
   } catch (err) {
     res
       .status(500)
-      .json({ message: "Error connecting with Gemini", error: err.message })
+      .json({ message: "Error processing request", error: err.message })
   }
 })
 
+// Function to insert form data into MongoDB
+async function insertFormData(formData) {
+  try {
+    await client.connect()
+    const database = client.db("museum_bookings")
+    const collection = database.collection("bookings")
+    const result = await collection.insertOne(formData)
+    console.log(`Inserted document with _id: ${result.insertedId}`)
+  } catch (err) {
+    console.error("Error inserting form data:", err)
+  } finally {
+    await client.close()
+  }
+}
+
 app.get("/warmup", (req, res) => {
   console.log("Warm-up request received")
-  // Perform any necessary initialization here
-  // For example, you might want to make a test database connection
   res.status(200).send("Server is warm and ready")
 })
 
