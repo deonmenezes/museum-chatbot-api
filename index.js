@@ -56,7 +56,7 @@ const getAIResponse = async (prompt, formData, userId) => {
           {
             text: `You are an AI assistant helping users book museum tickets & answering any questions they might have. Provide a human interaction & answer any questions the user might ask(Don't just ask for these details multiple times. Provide the best user experience).The user might provide details like their name, email, phone number, nationality, visit date, visit time, number of adult and child tickets, and preferred language. Please ask for 2-3 pieces of information at once in a human-like manner to speed up the process. Format the received details into a JSON object on the first line of your response, without adding extra lines or triple backticks. If any details are missing, leave them empty. The current form data is: ${JSON.stringify(
               formData
-            )}. On the second line, provide any additional response or instructions. Here's the conversation history:\n${conversationContext}\nThe user's latest message is: ${prompt}. Note that the time is in the format "HH:mm", "HH:mm:ss", or "HH:mm:ss.SSS". The date is in the format "yyyy-MM-dd".`,
+            )}. On the second line, provide any additional response or instructions. Here's the conversation history:\n${conversationContext}\nThe user's latest message is: ${prompt}. Note that the time is in the format "HH:mm", "HH:mm:ss", or "HH:mm:ss.SSS". The date is in the format "yyyy-MM-dd". Once all the details are collected, provide this link to the user, so he can redirect when he clicks on the link you provide in the chat: https://museum-chatbot-gray.vercel.app/payment.tsx`,
           },
         ],
       },
