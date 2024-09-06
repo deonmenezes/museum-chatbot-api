@@ -84,8 +84,8 @@ app.post("/chatGemini", async (req, res) => {
 async function insertFormData(formData) {
   try {
     await client.connect()
-    const database = client.db("museum_bookings")
-    const collection = database.collection("bookings")
+    const database = client.db("museum")
+    const collection = database.collection("form_data")
     const result = await collection.insertOne(formData)
     console.log(`Inserted document with _id: ${result.insertedId}`)
   } catch (err) {
