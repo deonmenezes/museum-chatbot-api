@@ -12,7 +12,7 @@ const app = express()
 
 // MongoDB connection string
 const uri =
-  "mongodb+srv://aarushs:UDrBFrLq8CHW9qYB@cluster0.3rnmp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&ssl=false"
+  "mongodb+srv://aarushs:UDrBFrLq8CHW9qYB@cluster0.3rnmp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 const client = new MongoClient(uri)
 
 // Initialize an object to store conversation histories
@@ -142,9 +142,14 @@ app.post("/chatGemini", async (req, res) => {
 
 // Function to insert form data into MongoDB
 async function insertFormData(formData) {
+  let client
   try {
+    client = new MongoClient(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
     await client.connect()
-    console.log("Connected to mongodb")
+    console.log("Connected to MongoDB")
     const database = client.db("museum")
     const collection = database.collection("form")
     const result = await collection.insertOne(formData)
@@ -152,10 +157,11 @@ async function insertFormData(formData) {
   } catch (err) {
     console.error("Error inserting form data:", err)
   } finally {
-    await client.close()
+    if (client) {
+      await client.close()
+    }
   }
 }
-
 app.get("/warmup", (req, res) => {
   console.log("Warm-up request received")
   res.status(200).send("Server is warm and ready")
